@@ -1,0 +1,10 @@
+Section: admin
+Priority: required
+Maintainer: Yukun (Beijing) Technology Co., Ltd.
+Version: &version
+Homepage: https://www.shukun.com/
+Package: &product_name 
+Architecture: arm64
+Size: &size
+Description: aultrasonic, ai, Jetpack &jetson_ver
+Pre-Depends: nvidia-l4t-jetson-io(&depend_ver)

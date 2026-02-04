@@ -1,0 +1,44 @@
+###
+ # @Author: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
+ # @Date: 2026-02-04 16:55:18
+ # @LastEditors: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
+ # @LastEditTime: 2026-02-04 17:28:44
+ # @FilePath: \config_server_py\deb\debPackage\DEBIAN\postrm
+ # @Description: 
+ # 
+ # Copyright (c) 2026 by ${git_name_email}, All Rights Reserved. 
+### 
+#! /bin/bash
+
+case "$1" in
+    remove)
+        echo "$(tput setaf 1)postrm called remove, removing... $(tput sgr0)"
+        if [ -f /home/uranus/file_server/main_app.py.bak ]; then
+            mv /home/uranus/file_server/main_app.py.bak /home/uranus/file_server/main_app.py || true
+        fi
+
+        exit 0
+    ;;
+
+    purge)
+        echo "$(tput setaf 1)postrm called purge, removing... $(tput sgr0)"
+        rm -rf /opt/uranus_tools || true
+        exit 0
+    ;;
+
+    upgrade)
+        echo "$(tput setaf 1)postrm called upgrade, upgrading... $(tput sgr0)"
+        systemctl daemon-reload
+        exit 0
+    ;;
+
+    abort-upgrade)
+        echo "$(tput setaf 1)postrm called abort upgrade, upgrading... $(tput sgr0)"
+        exit 0
+    ;;
+
+    *)
+        echo "$(tput setaf 1)postrm called with unknown argument $1. $(tput sgr0)"
+        exit -1
+    ;;
+esac

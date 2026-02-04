@@ -1,0 +1,33 @@
+#! /bin/bash
+
+kill_ip_init() {
+    echo "prerm Checking if main_app.py is running..."
+    pid=$(ps -ef | grep python3 | grep main_app.py | awk '{print $2}')
+    if [ -n "$pid" ]; then
+        echo "Warning: main_app.py is already running with PID $pid. Killing it..."
+        kill -9 $pid
+    fi
+}
+
+
+
+case "$1" in
+    remove)
+        echo "$(tput blink)$(tput setaf 1)prerm called remove, removing...$(tput sgr0)"
+        kill_ip_init
+
+        exit 0
+    ;;
+
+    upgrade)
+        echo "$(tput blink)$(tput setaf 1)prerm called upgrade, upgrading...$(tput sgr0)"
+        kill_ip_init
+        exit 0
+    ;;
+
+    *)
+        echo "$(tput blink)$(tput setaf 1)prerm called with unknown argument $1. $(tput sgr0)"
+        exit -1
+    ;;
+esac
+

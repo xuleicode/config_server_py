@@ -1,0 +1,39 @@
+#! /bin/bash
+
+case "$1" in
+    configure)
+        echo "$(tput setaf 1)postinst called configure, configuring... $(tput sgr0)"
+        touch  /opt/uranus_tools/logs/config_server.log
+        chmod 777 /opt/uranus_tools/logs/config_server.log
+        touch  /opt/uranus_tools/logs/start.log
+        chmod 777 /opt/uranus_tools/logs/start.log
+        touch  /opt/uranus_tools/logs/server.log
+        chmod 777 /opt/uranus_tools/logs/server.log
+
+        systemctl daemon-reload
+        systemctl enable uranus_tools.service
+        systemctl start uranus_tools.service
+
+        exit 0
+    ;;
+
+    upgrade)
+        echo "$(tput setaf 1)postinst called upgrade, upgrading... $(tput sgr0)"
+        exit 0
+    ;;
+
+    abort-upgrade)
+        echo "$(tput blink)$(tput setaf 1)postinst called abort upgrade...$(tput sgr0)"
+        exit 0
+    ;;
+
+    abort-remove)
+        echo "$(tput blink)$(tput setaf 1)postinst called abort remove...$(tput sgr0)"
+        exit 0
+    ;;
+
+    *)
+        echo "$(tput blink)$(tput setaf 1)postinst called with unknown argument $1. $(tput sgr0)"
+        exit -1
+    ;;
+esac

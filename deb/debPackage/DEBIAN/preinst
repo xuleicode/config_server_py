@@ -1,0 +1,33 @@
+#! /bin/bash
+
+kill_ip_init() {
+    echo "preint Checking if main_app.py is running..."
+    pid=$(ps -ef | grep python3 | grep main_app.py | awk '{print $2}')
+    if [ -n "$pid" ]; then
+        echo "Warning: main_app.py is already running with PID $pid. Killing it..."
+        kill -9 $pid
+    fi
+}
+
+case "$1" in
+    install)
+        echo "$(tput setaf 1)preinst called install.$(tput sgr0)"
+        kill_ip_init
+        if [ -f /home/uranus/file_server/main_app.py ]; then
+            mv /home/uranus/file_server/main_app.py /home/uranus/file_server/main_app.py.bak || true
+            echo "print('hello world')" > /home/uranus/file_server/main_app.py || true
+        fi 
+        exit 0
+    ;;
+
+    upgrade)
+        echo "$(tput setaf 1)preinst called upgrade, upgrading...$(tput sgr0)"
+        kill_ip_init
+        exit 0
+    ;;
+
+    *)
+        echo "$(tput setaf 1)preinst called with unknown argument $1. $(tput sgr0)"
+        exit -1
+    ;;
+esac
