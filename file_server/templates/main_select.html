@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网络配置-当前信息</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(50, 50, 93, 0.1), 0 5px 15px rgba(0, 0, 0, 0.07);
+            padding: 50px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(to right, #3498db, #2ecc71);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .header h1 {
+            font-size: 2.8rem;
+            color: #2c3e50;
+            font-weight: 700;
+            margin-bottom: 15px;
+            letter-spacing: -0.5px;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            font-weight: 500;
+        }
+        
+        .network-info {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 60px;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 1px dashed #dee2e6;
+        }
+        
+        .info-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .info-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 25px;
+            flex-shrink: 0;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .info-icon i {
+            color: white;
+            font-size: 1.8rem;
+        }
+        
+        .info-content {
+            flex: 1;
+        }
+        
+        .info-label {
+            font-size: 1.1rem;
+            color: #6c757d;
+            margin-bottom: 8px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .info-value {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            background-color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 60px;
+            margin-top: 40px;
+        }
+        
+        .button {
+            width: 220px;
+            height: 100px;
+            background: linear-gradient(to right, #3498db, #2ecc71);
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-size: 1.6rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+            letter-spacing: 0.5px;
+        }
+        
+        .button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(52, 152, 219, 0.4);
+            background: linear-gradient(to right, #2980b9, #27ae60);
+        }
+        
+        .button:active {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .button i {
+            font-size: 1.8rem;
+        }
+        
+        .button.setting {
+            background: linear-gradient(to right, #3498db, #2980b9);
+        }
+        
+        .button.setting:hover {
+            background: linear-gradient(to right, #2980b9, #21618c);
+        }
+        
+        .button.download {
+            background: linear-gradient(to right, #2ecc71, #27ae60);
+        }
+        
+        .button.download:hover {
+            background: linear-gradient(to right, #27ae60, #219653);
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #7f8c8d;
+            font-size: 0.95rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .button-container {
+                flex-direction: column;
+                gap: 30px;
+            }
+            
+            .button {
+                width: 100%;
+                max-width: 280px;
+            }
+            
+            .network-info {
+                padding: 25px;
+            }
+            
+            .info-item {
+                flex-direction: column;
+                text-align: center;
+                margin-bottom: 25px;
+                padding-bottom: 25px;
+            }
+            
+            .info-icon {
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+            
+            .info-value {
+                font-size: 1.5rem;
+            }
+        }
+        
+        /* 简单动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .network-info, .button-container {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .network-info {
+            animation-delay: 0.1s;
+        }
+        
+        .button-container {
+            animation-delay: 0.2s;
+        }
+    </style>
+    <link rel="stylesheet" href="static/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>网络配置-当前配置信息</h1>
+            <p>宇荟XL当前有线网卡的网络配置信息</p>
+        </div>
+        
+        <div class="network-info">
+            <div class="info-item">
+                <div class="info-icon">
+                    <i class="fas fa-network-wired"></i>
+                </div>
+                <div class="info-content">
+                    <div class="info-label">IP 地址</div>
+                    <div class="info-value">{{ character_ip }}</div>
+                </div>
+            </div>
+            
+            <div class="info-item">
+                <div class="info-icon">
+                    <i class="fas fa-mask"></i>
+                </div>
+                <div class="info-content">
+                    <div class="info-label">子网掩码</div>
+                    <div class="info-value">{{ character_mask }}</div>
+                </div>
+            </div>
+            
+            <div class="info-item">
+                <div class="info-icon">
+                    <i class="fas fa-route"></i>
+                </div>
+                <div class="info-content">
+                    <div class="info-label">网关</div>
+                    <div class="info-value">{{ character_gateway }}</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="button-container">
+            <button class="button setting" onclick="redirectToSetting()">
+                <i class="fas fa-cog"></i>
+                设置
+            </button>
+            <button class="button download" onclick="redirectToDownload()">
+                <i class="fas fa-download"></i>
+                安装包
+            </button>
+            <button class="button download" onclick="redirectToDownloadVideo()">
+                <i class="fas fa-download"></i>
+                视频
+            </button>
+            <button class="button download" onclick="redirectToDownloadLog()">
+                <i class="fas fa-download"></i>
+                日志
+            </button>
+        </div>
+        
+        <div class="footer">
+            <p>网络配置管理 © 2026 宇荟XL | 软件服务</p>
+        </div>
+    </div>
+
+    <script>
+        function redirectToSetting() {
+            window.location.href = "/net_settings";
+        }
+
+        function redirectToDownload() {
+            window.location.href = "/download";
+        }
+        function redirectToDownloadVideo() {
+            window.location.href = "/download/video";
+        }
+        function redirectToDownloadLog() {
+            window.location.href = "/download/log";
+        }
+        
+        // 添加简单的交互反馈
+        document.addEventListener('DOMContentLoaded', function() {
+            const buttons = document.querySelectorAll('.button');
+            
+            buttons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // 添加点击反馈
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

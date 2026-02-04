@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文件下载中心</title>
+    <link rel="stylesheet" href="static/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 50px 20px 40px;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            color: #2c3e50;
+            font-weight: 700;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .header h1:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(to right, #3498db, #2ecc71);
+            border-radius: 2px;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            font-weight: 500;
+            margin-top: 25px;
+        }
+        
+        .download-section {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(50, 50, 93, 0.1), 0 5px 15px rgba(0, 0, 0, 0.07);
+            padding: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f1f1f1;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 12px;
+            color: #3498db;
+            font-size: 2rem;
+        }
+        
+        .file-count {
+            background: linear-gradient(to right, #3498db, #2ecc71);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            box-shadow: 0 3px 10px rgba(52, 152, 219, 0.3);
+        }
+        
+        .file-list {
+            list-style: none;
+        }
+        
+        .file-item {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            padding: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid #e9ecef;
+        }
+        
+        .file-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-color: #3498db;
+        }
+        
+        .file-link {
+            display: flex;
+            align-items: center;
+            padding: 25px;
+            text-decoration: none;
+            color: inherit;
+            transition: background-color 0.2s;
+        }
+        
+        .file-link:hover {
+            background-color: #f0f8ff;
+        }
+        
+        .file-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 25px;
+            flex-shrink: 0;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+        }
+        
+        .file-icon i {
+            color: white;
+            font-size: 1.8rem;
+        }
+        
+        .file-info {
+            flex: 1;
+        }
+        
+        .file-name {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 8px;
+            word-break: break-all;
+        }
+        
+        .file-meta {
+            font-size: 1rem;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+        }
+        
+        .file-meta i {
+            margin-right: 8px;
+            font-size: 1rem;
+        }
+        
+        .file-download {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            margin-left: 20px;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .file-item:hover .file-download {
+            transform: scale(1.1);
+            background: linear-gradient(135deg, #2980b9, #27ae60);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+        
+        .empty-icon {
+            font-size: 5rem;
+            color: #dee2e6;
+            margin-bottom: 20px;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.8rem;
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+        
+        .empty-state p {
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .download-section {
+                padding: 25px 20px;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .file-count {
+                margin-top: 15px;
+            }
+            
+            .file-link {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 20px;
+            }
+            
+            .file-icon {
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+            
+            .file-info {
+                width: 100%;
+            }
+            
+            .file-download {
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+            }
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .file-item {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        /* 文件类型图标颜色 */
+        .file-pdf .file-icon {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+        
+        .file-image .file-icon {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+        }
+        
+        .file-zip .file-icon {
+            background: linear-gradient(135deg, #f39c12, #d35400);
+        }
+        
+        .file-doc .file-icon {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+        
+        .file-other .file-icon {
+            background: linear-gradient(135deg, #7f8c8d, #34495e);
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .button {
+            width: 220px;
+            height: 80px;
+            background: linear-gradient(to right, #3498db, #2ecc71);
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-size: 1.6rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+            letter-spacing: 0.5px;
+        }
+        
+        .button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(52, 152, 219, 0.4);
+            background: linear-gradient(to right, #2980b9, #27ae60);
+        }
+        
+        .button:active {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .button i {
+            font-size: 1.8rem;
+        }
+        
+        .button.submit {
+            background: linear-gradient(to right, #3498db, #2980b9);
+        }
+        
+        .button.submit:hover {
+            background: linear-gradient(to right, #2980b9, #21618c);
+        }
+        
+        .button.back {
+            background: linear-gradient(to right, #95a5a6, #7f8c8d);
+        }
+        
+        .button.back:hover {
+            background: linear-gradient(to right, #7f8c8d, #6c757d);
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #7f8c8d;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+        <h1>{% if type == 'exe' %}下载中心-安装包{% elif type == 'video' %}下载中心-视频{% elif type == 'log' %}下载中心-日志{% else %}下载中心-文件{% endif %}</h1>
+            <p>选择您需要的文件进行下载</p>
+        </div>
+        
+        <div class="download-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-folder-open"></i>
+                    可下载文件
+                </h2>
+                <div class="file-count">{{ files|length }} 个文件</div>
+            </div>
+            
+            {% if files %}
+            <ul class="file-list">
+                {% for file in files %}
+                <li class="file-item {% if '.pdf' in file %}file-pdf{% elif '.jpg' in file or '.png' in file or '.gif' in file %}file-image{% elif '.zip' in file or '.rar' in file %}file-zip{% elif '.doc' in file or '.docx' in file %}file-doc{% else %}file-other{% endif %}">
+                    <a href="{{ url_for('download_{}'.format(type), filename=file.name) }}" class="file-link">
+                        <div class="file-icon">
+                            {% if '.pdf' in file %}
+                            <i class="fas fa-file-pdf"></i>
+                            {% elif '.jpg' in file or '.png' in file or '.gif' in file %}
+                            <i class="fas fa-file-image"></i>
+                            {% elif '.zip' in file or '.rar' in file %}
+                            <i class="fas fa-file-archive"></i>
+                            {% elif '.doc' in file or '.docx' in file %}
+                            <i class="fas fa-file-word"></i>
+                            {% else %}
+                            <i class="fas fa-file"></i>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="file-info">
+                            <div class="file-name">{{ file.name }}</div>
+                            <div class="file-meta">
+                                <i class="far fa-clock"></i>
+                                {{ file.mod_time }}
+                                <i class="fas fa-file-size"></i>
+                                {{ file.size|filesizeformat }}
+                            </div>
+                        </div>
+                        
+                        <div class="file-download">
+                            <i class="fas fa-download"></i>
+                        </div>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-folder-open"></i>
+                </div>
+                <h3>暂无文件</h3>
+                <p>
+                {% if type == 'exe' %}
+                    当前目录中没有可供下载的可执行文件，请检查文件是否已上传至服务器。
+                {% elif type == 'video' %}
+                    当前目录中没有可供下载的视频文件。请使用报告助手点击下一位进行患者扫查，生成当天的视频文件。
+                {% elif type == 'log' %}
+                    当前目录中没有可供下载的日志文件，暂无当天的日志记录。
+                {% endif %}
+                </p>
+            </div>
+            {% endif %}
+        </div>
+        <div class="button-container">
+            <button class="button back" onclick="redirectToHome()">
+                <i class="fas fa-arrow-left"></i>
+                返回
+            </button>
+        </div>
+        <div class="footer">
+            <p>文件下载系统 © 2026 宇荟XL | 软件服务</p>
+        </div>
+    </div>
+
+    <script>
+
+        // 返回首页
+        function redirectToHome() {
+            window.location.href = "/main_select";
+        }
+        
+        // 添加简单的交互效果
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileItems = document.querySelectorAll('.file-item');
+            
+            fileItems.forEach(item => {
+                // 点击文件项时的效果
+                item.addEventListener('click', function(e) {
+                    // 防止重复点击
+                    if (this.classList.contains('clicked')) {
+                        e.preventDefault();
+                        return;
+                    }
+                    
+                    // 添加点击效果
+                    this.classList.add('clicked');
+                    const downloadIcon = this.querySelector('.file-download i');
+                    const originalClass = downloadIcon.className;
+                    
+                    // 下载动画
+                    downloadIcon.className = 'fas fa-spinner fa-spin';
+                    
+                    // 3秒后恢复（如果下载还没开始的话）
+                    setTimeout(() => {
+                        if (this.classList.contains('clicked')) {
+                            downloadIcon.className = originalClass;
+                            this.classList.remove('clicked');
+                        }
+                    }, 3000);
+                });
+                
+                // 移除点击状态（当链接正常工作时）
+                item.addEventListener('mouseleave', function() {
+                    setTimeout(() => {
+                        this.classList.remove('clicked');
+                        const downloadIcon = this.querySelector('.file-download i');
+                        if (downloadIcon.className.includes('fa-spinner')) {
+                            downloadIcon.className = 'fas fa-download';
+                        }
+                    }, 1000);
+                });
+            });
+            
+            // 文件类型提示
+            const fileLinks = document.querySelectorAll('.file-link');
+            fileLinks.forEach(link => {
+                link.addEventListener('mouseenter', function() {
+                    const fileName = this.querySelector('.file-name').textContent;
+                    const fileType = this.parentElement.className.match(/file-\w+/)[0].replace('file-', '');
+                    
+                    // 可以根据需要添加文件类型提示
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设置网络信息-登录</title>
+    <link rel="stylesheet" href="static/css/all.min.css">
+    <script src="static/js/crypto-js.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+        
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 40px;
+            font-size: 2.8rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        h1:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, #3498db, #2ecc71);
+            border-radius: 2px;
+        }
+        
+        .login-form {
+            background-color: white;
+            padding: 50px 40px;
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(50, 50, 93, 0.1), 0 5px 15px rgba(0, 0, 0, 0.07);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .login-form:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 18px 40px rgba(50, 50, 93, 0.15), 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+        
+        .form-group {
+            margin-bottom: 28px;
+            position: relative;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 1.05rem;
+            transition: color 0.2s;
+        }
+        
+        .input-container {
+            position: relative;
+        }
+        
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 18px 20px 18px 50px;
+            border: 2px solid #e8e8e8;
+            border-radius: 12px;
+            font-size: 1rem;
+            color: #333;
+            background-color: #f9f9f9;
+            transition: all 0.3s;
+        }
+        
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #3498db;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+            font-size: 1.2rem;
+            transition: color 0.3s;
+        }
+        
+        input:focus + .input-icon {
+            color: #3498db;
+        }
+        
+        input[type="submit"] {
+            width: 100%;
+            background: linear-gradient(to right, #3498db, #2ecc71);
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        input[type="submit"]:hover {
+            background: linear-gradient(to right, #2980b9, #27ae60);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        input[type="submit"]:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(52, 152, 219, 0.3);
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        .footer a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+        
+        .footer a:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 480px) {
+            .login-form {
+                padding: 40px 30px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+                margin-bottom: 30px;
+            }
+        }
+        
+        /* 密码可见性切换（启用功能） */
+        .password-toggle {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: block; /* 改为显示 */
+            transition: color 0.3s;
+        }
+        
+        .password-toggle:hover {
+            color: #3498db;
+        }
+        
+        /* 输入框验证状态 */
+        input.valid {
+            border-color: #2ecc71;
+        }
+        
+        input.invalid {
+            border-color: #e74c3c;
+        }
+        
+        /* 消息提示容器 */
+        .message-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 400px;
+        }
+        
+        .message {
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            animation: slideIn 0.5s ease-out;
+            transform-origin: top right;
+        }
+        
+        .message.success {
+            background: linear-gradient(to right, #2ecc71, #27ae60);
+            color: white;
+            border-left: 5px solid #219653;
+        }
+        
+        .message.error {
+            background: linear-gradient(to right, #e74c3c, #c0392b);
+            color: white;
+            border-left: 5px solid #a93226;
+        }
+        
+        .message.warning {
+            background: linear-gradient(to right, #f39c12, #e67e22);
+            color: white;
+            border-left: 5px solid #d35400;
+        }
+        
+        .message.info {
+            background: linear-gradient(to right, #3498db, #2980b9);
+            color: white;
+            border-left: 5px solid #21618c;
+        }
+        
+        .message i {
+            font-size: 1.8rem;
+            margin-right: 15px;
+        }
+        
+        .message-content {
+            flex: 1;
+        }
+        
+        .message-title {
+            font-weight: 700;
+            margin-bottom: 5px;
+            font-size: 1.2rem;
+        }
+        
+        .message-text {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .close-message {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin-left: 15px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        
+        .close-message:hover {
+            opacity: 1;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(100px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes slideOut {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(100px); }
+        }
+        
+        .message.hiding {
+            animation: slideOut 0.5s ease-out forwards;
+        }
+        
+        /* 简单动画 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .login-form {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- 消息提示容器 -->
+    <div class="message-container" id="messageContainer"></div>
+    
+    <div class="login-container">
+        <h1>登录</h1>
+        <form class="login-form" id="loginForm">
+            <div class="form-group">
+                <label for="username">用户名</label>
+                <div class="input-container">
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" id="username" name="username" placeholder="输入你的用户名" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">密码</label>
+                <div class="input-container">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="password" name="password" placeholder="输入你的密码" required>
+                    <!-- 新增密码切换按钮 -->
+                    <i class="fas fa-eye password-toggle" id="passwordToggle"></i>
+                </div>
+            </div>
+            
+            <input type="submit" value="登录">
+        </form>
+        
+        <div class="footer">
+            <p>安全登录界面 © 2026 宇荟XL | 软件服务</p>
+        </div>
+    </div>
+
+    <script>
+        // 显示消息函数
+        function showMessage(type, title, text, duration = 5000) {
+            const messageContainer = document.getElementById('messageContainer');
+            
+            // 创建消息元素
+            const message = document.createElement('div');
+            message.className = `message ${type}`;
+            
+            // 图标映射
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+            
+            message.innerHTML = `
+                <i class="fas ${icons[type] || 'fa-info-circle'}"></i>
+                <div class="message-content">
+                    <div class="message-title">${title}</div>
+                    <div class="message-text">${text}</div>
+                </div>
+                <button class="close-message">&times;</button>
+            `;
+            
+            // 添加到容器
+            messageContainer.appendChild(message);
+            
+            // 关闭按钮事件
+            const closeBtn = message.querySelector('.close-message');
+            closeBtn.addEventListener('click', function() {
+                hideMessage(message);
+            });
+            
+            // 自动隐藏
+            if (duration > 0) {
+                setTimeout(() => {
+                    hideMessage(message);
+                }, duration);
+            }
+            
+            return message;
+        }
+        
+        // 隐藏消息
+        function hideMessage(message) {
+            if (!message.classList.contains('hiding')) {
+                message.classList.add('hiding');
+                setTimeout(() => {
+                    if (message.parentNode) {
+                        message.parentNode.removeChild(message);
+                    }
+                }, 500);
+            }
+        }
+        
+        function md5Hash(str) {
+            // 计算字符串的MD5值并返回32位小写哈希
+            return CryptoJS.MD5(str).toString();
+        }
+        
+        // 发送登录请求到服务端
+        async function sendLoginRequest(username, password) {
+            //alert(username);
+            try {
+                // 创建FormData对象
+                const formData = new FormData();
+                // 加密密码
+                const encodedPassword = btoa(unescape(encodeURIComponent(password)));
+                const encodeUsername = btoa(unescape(encodeURIComponent(username)));
+                const md5Password = md5Hash(encodedPassword+'xpl');
+                const enmd5Password = btoa(unescape(encodeURIComponent(md5Password)));
+
+                formData.append('xul', encodeUsername);
+                formData.append('xpl', enmd5Password);
+                formData.append('username', 'uranus_name');
+                formData.append('password', 'uranus_passwd');
+                
+                // 发送POST请求到服务端
+                const response = await fetch('/login_check', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                // 检查响应状态
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                // 解析响应数据
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('登录请求失败:', error);
+                throw error;
+            }
+        }
+        
+        // 处理登录表单提交
+        async function handleLoginSubmit(e) {
+            e.preventDefault(); // 阻止表单默认提交行为
+            
+            const form = document.getElementById('loginForm');
+            const submitBtn = form.querySelector('input[type="submit"]');
+            
+            // 获取表单数据
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            // 清除之前的错误状态
+            document.getElementById('username').classList.remove('invalid');
+            document.getElementById('password').classList.remove('invalid');
+            
+            // 验证输入
+            if (!username || !password) {
+                // 显示错误消息
+                if (!username) {
+                    document.getElementById('username').classList.add('invalid');
+                    showMessage('error', '用户名错误', '请输入用户名', 3000);
+                }
+                if (!password) {
+                    document.getElementById('password').classList.add('invalid');
+                    showMessage('error', '密码错误', '请输入密码', 3000);
+                }
+                return;
+            }
+            
+            // 提交时的按钮反馈
+            const originalText = submitBtn.value;
+            submitBtn.value = '登录中...';
+            submitBtn.style.opacity = '0.8';
+            submitBtn.disabled = true;
+            
+            // 显示登录中的提示
+            const loginMessage = showMessage('info', '登录中', '正在验证您的身份...', 0);
+            
+            try {
+                // 发送登录请求到服务端
+                const result = await sendLoginRequest(username, password);
+                
+                // 隐藏登录中消息
+                hideMessage(loginMessage);
+                
+                // 根据服务端返回的结果进行处理
+                if (result.success) {
+                    // 登录成功
+                    showMessage('success', '登录成功', result.message || '正在跳转页面...', 50);
+
+                    // if (result.token) {
+                    //     // alert(result.token);
+                    //     sessionStorage.setItem('authToken', result.token);
+                    //     // 可以添加过期时间（可选）
+                    //     const expiresIn = result.expiresIn || 1800; // 默认30分钟（1800秒）
+                    //     const expirationTime = new Date().getTime() + expiresIn * 1000;
+                    //     sessionStorage.setItem('tokenExpiration', expirationTime.toString());
+                    // }
+                                        
+                    // 根据服务端返回的redirect_url跳转，或使用默认跳转
+                    setTimeout(() => {
+                        window.location.href = result.redirect_url || '/config';
+                    }, 50);
+                } else {
+                    // 登录失败
+                    showMessage('error', '登录失败', result.message || '用户名或密码错误，请重试', 4000);
+                    
+                    // 重置按钮状态
+                    submitBtn.value = originalText;
+                    submitBtn.style.opacity = '1';
+                    submitBtn.disabled = false;
+                    
+                    // 标记输入框为错误状态
+                    document.getElementById('username').classList.add('invalid');
+                    document.getElementById('password').classList.add('invalid');
+                }
+            } catch (error) {
+                // 网络错误或其他错误
+                hideMessage(loginMessage);
+                showMessage('error', '网络错误', '无法连接到服务器，请检查网络连接', 4000);
+                
+                // 重置按钮状态
+                submitBtn.value = originalText;
+                submitBtn.style.opacity = '1';
+                submitBtn.disabled = false;
+                
+                console.error('登录过程中出现错误:', error);
+            }
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取表单元素
+            const form = document.getElementById('loginForm');
+            
+            // 添加表单提交事件监听
+            form.addEventListener('submit', handleLoginSubmit);
+            
+            // 输入框交互效果
+            const inputs = document.querySelectorAll('input[type="text"], input[type="password"]');
+            
+            inputs.forEach(input => {
+                // 添加焦点效果
+                input.addEventListener('focus', function() {
+                    this.parentElement.parentElement.querySelector('label').style.color = '#3498db';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.parentElement.querySelector('label').style.color = '#2c3e50';
+                    
+                    // 简单的验证效果
+                    if (this.value.trim() !== '') {
+                        this.classList.add('valid');
+                        this.classList.remove('invalid');
+                    } else {
+                        this.classList.remove('valid');
+                    }
+                });
+                
+                // 输入时效果
+                input.addEventListener('input', function() {
+                    if (this.value.trim() !== '') {
+                        this.classList.add('valid');
+                        this.classList.remove('invalid');
+                    } else {
+                        this.classList.remove('valid');
+                    }
+                });
+            });
+            
+            // 检查本地存储中是否有已保存的用户名
+            const savedUsername = localStorage.getItem('last_username');
+            if (savedUsername) {
+                document.getElementById('username').value = savedUsername;
+            }
+            
+            // 新增：密码显示/隐藏切换逻辑
+            const passwordInput = document.getElementById('password');
+            const passwordToggle = document.getElementById('passwordToggle');
+            
+            passwordToggle.addEventListener('click', function() {
+                // 切换输入框类型
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                
+                // 切换图标（眼睛/闭眼）
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+            
+            // 添加一个演示消息（可选）
+            setTimeout(() => {
+                showMessage('info', '提示', '请输入您的用户名和密码登录系统', 6000);
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

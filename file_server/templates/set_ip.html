@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网络配置-设置网络</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(50, 50, 93, 0.1), 0 5px 15px rgba(0, 0, 0, 0.07);
+            padding: 50px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(to right, #3498db, #2ecc71);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .header h1 {
+            font-size: 2.8rem;
+            color: #2c3e50;
+            font-weight: 700;
+            margin-bottom: 15px;
+            letter-spacing: -0.5px;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            font-weight: 500;
+        }
+        
+        /* 新增：错误提示容器 */
+        .alert-container {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            width: 90%;
+            max-width: 600px;
+            display: none;
+        }
+        
+        .alert-message {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 20px 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(231, 76, 60, 0.3);
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            animation: slideDown 0.3s ease-out;
+            margin-bottom: 15px;
+        }
+        
+        .alert-message.warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+        
+        .alert-message.success {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+        
+        .alert-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.3rem;
+            cursor: pointer;
+            margin-left: 15px;
+            padding: 5px;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .config-form {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .form-group {
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 1px dashed #dee2e6;
+            position: relative;
+        }
+        
+        .form-group:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .form-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 25px;
+            flex-shrink: 0;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        
+        .form-icon i {
+            color: white;
+            font-size: 1.8rem;
+        }
+        
+        .form-content {
+            flex: 1;
+            margin-left: 95px;
+        }
+        
+        label {
+            display: block;
+            font-size: 1.1rem;
+            color: #6c757d;
+            margin-bottom: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .input-container {
+            position: relative;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 20px 25px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.4rem;
+            color: #2c3e50;
+            background-color: white;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            border-left: 4px solid #3498db;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-left-width: 6px;
+            box-shadow: 0 5px 20px rgba(52, 152, 219, 0.2);
+        }
+        
+        .field-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+            font-size: 1.4rem;
+        }
+        
+        .input-hint {
+            font-size: 0.95rem;
+            color: #7f8c8d;
+            margin-top: 10px;
+            margin-left: 5px;
+        }
+        
+        .button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .button {
+            width: 220px;
+            height: 80px;
+            background: linear-gradient(to right, #3498db, #2ecc71);
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-size: 1.6rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+            letter-spacing: 0.5px;
+        }
+        
+        .button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(52, 152, 219, 0.4);
+            background: linear-gradient(to right, #2980b9, #27ae60);
+        }
+        
+        .button:active {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .button i {
+            font-size: 1.8rem;
+        }
+        
+        .button.submit {
+            background: linear-gradient(to right, #3498db, #2980b9);
+        }
+        
+        .button.submit:hover {
+            background: linear-gradient(to right, #2980b9, #21618c);
+        }
+        
+        .button.back {
+            background: linear-gradient(to right, #95a5a6, #7f8c8d);
+        }
+        
+        .button.back:hover {
+            background: linear-gradient(to right, #7f8c8d, #6c757d);
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #7f8c8d;
+            font-size: 0.95rem;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .button-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .button {
+                width: 100%;
+                max-width: 280px;
+                height: 70px;
+            }
+            
+            .config-form {
+                padding: 25px;
+            }
+            
+            .form-group {
+                padding-left: 0;
+                padding-bottom: 25px;
+            }
+            
+            .form-icon {
+                position: relative;
+                margin-bottom: 20px;
+                left: auto;
+            }
+            
+            .form-content {
+                margin-left: 0;
+            }
+            
+            input[type="text"] {
+                font-size: 1.2rem;
+                padding: 16px 20px;
+            }
+            
+            .alert-container {
+                width: 95%;
+                top: 15px;
+            }
+            
+            .alert-message {
+                padding: 15px 20px;
+                font-size: 1rem;
+            }
+        }
+        
+        /* 简单动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .config-form, .button-container {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .config-form {
+            animation-delay: 0.1s;
+        }
+        
+        .button-container {
+            animation-delay: 0.2s;
+        }
+        
+        /* 验证状态样式 */
+        .valid {
+            border-left-color: #2ecc71 !important;
+        }
+        
+        .invalid {
+            border-left-color: #e74c3c !important;
+        }
+    </style>
+    <link rel="stylesheet" href="static/css/all.min.css">
+</head>
+<body>
+    <!-- 新增：提示容器 -->
+    <div class="alert-container" id="alertContainer"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>网络配置-设置网络</h1>
+            <p>设置宇荟XL有线网卡的网络配置信息</p>
+        </div>
+        
+        <form class="config-form" action="/net_config" method="post">
+            <div class="form-group">
+                <div class="form-icon">
+                    <i class="fas fa-network-wired"></i>
+                </div>
+                <div class="form-content">
+                    <label for="ipAddress">IP 地址</label>
+                    <div class="input-container">
+                        <input type="text" value="{{ip_address}}" id="ipAddress" name="ipAddress" placeholder="例如：192.168.1.100">
+                        <i class="fas fa-network-wired field-icon"></i>
+                    </div>
+                    <div class="input-hint">请输入有效的IPv4地址</div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <div class="form-icon">
+                    <i class="fas fa-mask"></i>
+                </div>
+                <div class="form-content">
+                    <label for="mask">子网掩码</label>
+                    <div class="input-container">
+                        <input type="text" value="{{mask}}" id="mask" name="mask" placeholder="例如：255.255.255.0">
+                        <i class="fas fa-mask field-icon"></i>
+                    </div>
+                    <div class="input-hint">家庭网络通常为255.255.255.0</div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <div class="form-icon">
+                    <i class="fas fa-route"></i>
+                </div>
+                <div class="form-content">
+                    <label for="gateway">网关</label>
+                    <div class="input-container">
+                        <input type="text" value="{{gateway}}" id="gateway" name="gateway" placeholder="例如：192.168.1.1">
+                        <i class="fas fa-route field-icon"></i>
+                    </div>
+                    <div class="input-hint">通常是您的路由器IP地址，可以是未配置</div>
+                </div>
+            </div>
+        </form>
+        
+        <div class="button-container">
+            <button class="button back" onclick="redirectToHome()">
+                <i class="fas fa-arrow-left"></i>
+                返回
+            </button>
+            <button class="button submit" onclick="submitForm()">
+                <i class="fas fa-check"></i>
+                应用配置
+            </button>
+        </div>
+        
+        <div class="footer">
+            <p>网络配置管理 © 2026 宇荟XL | 软件服务</p>
+        </div>
+    </div>
+
+    <script>
+        // 新增：显示提示函数
+        function showAlert(message, type = 'error') {
+            const alertContainer = document.getElementById('alertContainer');
+            
+            // 创建提示元素
+            const alertElement = document.createElement('div');
+            alertElement.className = `alert-message ${type}`;
+            alertElement.innerHTML = `
+                <span>${message}</span>
+                <button class="alert-close" onclick="this.parentElement.remove(); checkAlerts();">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            // 添加到容器
+            alertContainer.appendChild(alertElement);
+            alertContainer.style.display = 'block';
+            
+            // 5秒后自动移除（如果是错误或警告）
+            if (type !== 'success') {
+                setTimeout(() => {
+                    if (alertElement.parentElement) {
+                        alertElement.remove();
+                        checkAlerts();
+                    }
+                }, 5000);
+            }
+        }
+        
+        // 新增：检查是否有提示，如果没有则隐藏容器
+        function checkAlerts() {
+            const alertContainer = document.getElementById('alertContainer');
+            if (alertContainer.children.length === 0) {
+                alertContainer.style.display = 'none';
+            }
+        }
+        
+        // 表单提交函数
+        function submitForm() {
+            const form = document.querySelector('.config-form');
+            const submitBtn = document.querySelector('.button.submit');
+            
+            // 简单的必填字段验证
+            const ipAddress = document.getElementById('ipAddress').value.trim();
+            const mask = document.getElementById('mask').value.trim();
+            const gateway = document.getElementById('gateway').value.trim();
+            
+            if (!ipAddress) {
+                showAlert('请填写IPv4地址');
+                return;
+            }
+            if (!mask) {
+                showAlert('请填写子网掩码');
+                return;
+            }
+            
+            // IP地址格式验证
+            const ipPattern = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+            
+            
+            if (!ipPattern.test(ipAddress)) {
+                showAlert('请填写有效的IPv4地址格式');
+                return;
+            }
+            if (!ipPattern.test(mask)) {
+                showAlert('请填写有效的子网掩码格式');
+                return;
+            }
+
+            if (gateway !== '' && !ipPattern.test(gateway)) {
+                showAlert('请填写有效的网关格式');
+                return;
+            }
+            
+            // 提交时的按钮反馈
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 配置中...';
+            submitBtn.style.opacity = '0.8';
+            submitBtn.disabled = true;
+            
+            // // 显示成功提示
+            // showAlert('配置提交中，请稍候...', 'warning');
+            
+            // 提交表单
+            form.submit();
+            
+            // 3秒后重置按钮（如果提交失败）
+            setTimeout(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.style.opacity = '1';
+                submitBtn.disabled = false;
+            }, 3000);
+        }
+        
+        // 返回首页
+        function redirectToHome() {
+            window.location.href = "/main_select";
+        }
+        
+        // 添加简单的交互反馈
+        document.addEventListener('DOMContentLoaded', function() {
+            const buttons = document.querySelectorAll('.button');
+            const inputs = document.querySelectorAll('input[type="text"]');
+            
+            // 按钮点击反馈
+            buttons.forEach(button => {
+                button.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                });
+            });
+            
+            // 输入框验证
+            inputs.forEach(input => {
+                // 添加焦点效果
+                input.addEventListener('focus', function() {
+                    this.style.boxShadow = '0 5px 20px rgba(52, 152, 219, 0.3)';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.style.boxShadow = '0 3px 15px rgba(0, 0, 0, 0.08)';
+                    
+                    // IP地址格式验证（仅视觉反馈）
+                    const ipPattern = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+                    
+                    if (this.value.trim() !== '') {
+                        if (ipPattern.test(this.value.trim())) {
+                            this.classList.add('valid');
+                            this.classList.remove('invalid');
+                        } else {
+                            this.classList.add('invalid');
+                            this.classList.remove('valid');
+                        }
+                    } else {
+                        this.classList.remove('valid', 'invalid');
+                    }
+                });
+                
+                // 输入时实时验证
+                input.addEventListener('input', function() {
+                    const ipPattern = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+                    
+                    if (this.value.trim() !== '') {
+                        if (ipPattern.test(this.value.trim())) {
+                            this.classList.add('valid');
+                            this.classList.remove('invalid');
+                        } else {
+                            this.classList.add('invalid');
+                            this.classList.remove('valid');
+                        }
+                    } else {
+                        this.classList.remove('valid', 'invalid');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
